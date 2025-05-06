@@ -2,7 +2,7 @@
 #include <iostream>
 
 int main() {
-    gitCIServer server(8888, "https://github.com/EralifeIX/gitCiServer", "/tmp/myrepo");
+    gitCIServer server(8888, "https://github.com/EralifeIX/gitCiServer", "/cloneDir");
 
     if (!server.start()) {
         std::cerr << "Failed to start CI server.\n";

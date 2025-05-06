@@ -60,19 +60,27 @@ int gitCIServer::handleRequest(void *cls, struct MHD_Connection *connection,
     return ret;
 }
 
-void gitCIServer::processPush() {
-    using namespace std;
+void gitCIServer::processPush() const {
+    namespace fs = std::filesystem;
 
-    if (!filesystem::exists(cloneDir_)) {
-        string cmd = "git clone " + repoUrl_ + " " + cloneDir_;
-        system(cmd.c_str());
-    } else {
-        string cmd = "cd " + cloneDir_ + " && git pull";
-        system(cmd.c_str());
+    // Создаём родительскую папку, если её нет
+    fs::path clonePath(cloneDir_);
+    if (!fs::exists(clonePath.parent_path())) {
+        fs::create_directories(clonePath.parent_path());
     }
 
-    string testCmd = "cd " + cloneDir_ + " && ./run_tests.sh > result.txt 2>&1";
-    system(testCmd.c_str());
+    // Если репозиторий не клонирован — клонируем
+    if (!fs::exists(cloneDir_)) {
+        std::string cmd = "git clone " + repoUrl_ + " " + cloneDir_;
+        std::system(cmd.c_str());
+    } else {
+        std::string cmd = "cd " + cloneDir_ + " && git pull";
+        std::system(cmd.c_str());
+    }
+
+    // Запуск тестов
+    std::string testCmd = "cd " + cloneDir_ + " && ./run_tests.sh > result.txt 2>&1";
+    std::system(testCmd.c_str());
 }
 
 std::string gitCIServer::readTestResult() {

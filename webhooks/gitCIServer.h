@@ -30,7 +30,7 @@ private:
     struct MHD_Daemon* daemon_;
     std::string jsonData_;
 
-    void processPush();
+    void processPush() const;
     std::string readTestResult();
 };
 
